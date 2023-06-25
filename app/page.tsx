@@ -3,7 +3,6 @@
 import { gsap } from 'gsap';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { digitPatterns } from '@/const/digitPatterns';
 import { animations } from '@/utils/animations';
 import { displayTime } from '@/utils/displayTime';
 import { resetMockClocks } from '@/utils/resetMockClocks';
