@@ -4,11 +4,15 @@ import { gsap } from 'gsap';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { digitPatterns } from '@/const/digitPatterns';
+import { wave } from '@/utils/animations';
 
 export default function Home() {
   const [time, setTime] = useState(dayjs().format('HHmm'));
+  const [seconds, setSeconds] = useState(0);
+
   const updateTime = () => {
     if (time !== dayjs().format('HHmm')) setTime(dayjs().format('HHmm'));
+    setSeconds(dayjs().second());
     setTimeout(updateTime, 1000);
   };
 
@@ -38,6 +42,17 @@ export default function Home() {
     updateTime();
   }, [time]);
 
+  useEffect(() => {
+    if (seconds === 20) {
+      wave();
+      gsap.to('.pointer', {
+        duration: 12,
+        delay: 28,
+        rotation: 225,
+      });
+    }
+  }, [seconds]);
+
   return (
     <main
       className="m-auto grid w-min gap-1"
@@ -58,7 +73,7 @@ export default function Home() {
           {Array.from({ length: 2 }, (_, j) => (
             <div
               key={j}
-              className={`pointer clock-${i}-pointer-${j} inset absolute flex h-full w-full justify-center`}
+              className={`pointer pointer-${j} clock-${i}-pointer-${j} inset absolute flex h-full w-full justify-center`}
             >
               <div className="h-1/2 w-1 translate-y-0.5 rounded-b-full bg-white"></div>
             </div>
