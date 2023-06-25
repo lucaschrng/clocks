@@ -4,11 +4,14 @@ import { gsap } from 'gsap';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { digitPatterns } from '@/const/digitPatterns';
-import { wave } from '@/utils/animations';
+import { animations } from '@/utils/animations';
+import { displayTime } from '@/utils/displayTime';
+import { resetMockClocks } from '@/utils/resetMockClocks';
 
 export default function Home() {
   const [time, setTime] = useState(dayjs().format('HHmm'));
   const [seconds, setSeconds] = useState(0);
+  const [animationIndex, setAnimationIndex] = useState(0);
 
   const updateTime = () => {
     if (time !== dayjs().format('HHmm')) setTime(dayjs().format('HHmm'));
@@ -18,38 +21,24 @@ export default function Home() {
 
   useEffect(() => {
     gsap.to('.pointer', {
-      duration: 2,
+      duration: 0,
       rotation: 225,
     });
+  }, []);
 
-    for (let i = 0; i < 4; i++) {
-      const offsets = [16, 19, 23, 26];
-
-      digitPatterns[time[i]].forEach((row, j) => {
-        row.forEach((angles, k) => {
-          gsap.to(`.clock-${j * 15 + k + offsets[i]}-pointer-${0}`, {
-            duration: 10,
-            rotation: angles[0],
-          });
-          gsap.to(`.clock-${j * 15 + k + offsets[i]}-pointer-${1}`, {
-            duration: 10,
-            rotation: angles[1],
-          });
-        });
-      });
-    }
+  useEffect(() => {
+    displayTime(time, 10, 0);
 
     updateTime();
   }, [time]);
 
   useEffect(() => {
     if (seconds === 20) {
-      wave();
-      gsap.to('.pointer', {
-        duration: 12,
-        delay: 28,
-        rotation: 225,
-      });
+      animations[animationIndex]();
+      setAnimationIndex((animationIndex + 1) % animations.length);
+
+      resetMockClocks(10, 20);
+      displayTime(time, 10, 20);
     }
   }, [seconds]);
 
@@ -73,7 +62,7 @@ export default function Home() {
           {Array.from({ length: 2 }, (_, j) => (
             <div
               key={j}
-              className={`pointer pointer-${j} clock-${i}-pointer-${j} inset absolute flex h-full w-full justify-center`}
+              className={`pointer pointer-${j} clock-${i}-pointer-${j} inset absolute flex h-full w-full justify-center p-0.5`}
             >
               <div className="h-1/2 w-1 translate-y-0.5 rounded-b-full bg-white"></div>
             </div>
